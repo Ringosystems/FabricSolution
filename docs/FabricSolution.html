@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>The Fabric Suite solution overview</title>
+<style>
+  /* ---- Page ---- */
+  @page { size: Letter; margin: 0.34in; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy:   #0B2545;
+    --navy-2: #133b6b;
+    --teal:   #1FB6A6;
+    --teal-d: #0E8C80;
+    --teal-bg:#E9F9F7;
+    --ink:    #1c2733;
+    --dim:    #5b6b7b;
+    --line:   #e2e8ee;
+    --panel:  #F5F7F9;
+    --mono:   "Cascadia Code", Consolas, ui-monospace, monospace;
+    --sans:   -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  html, body { font-family: var(--sans); color: var(--ink); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { width: 7.82in; }
+  .mono { font-family: var(--mono); font-size: 0.93em; }
+
+  /* ---- Header band ---- */
+  .hero {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 100%);
+    color: #fff; border-radius: 12px; padding: 18px 22px 16px;
+    position: relative; overflow: hidden;
+  }
+  .hero::after {
+    content: ""; position: absolute; right: -60px; top: -60px;
+    width: 220px; height: 220px; border-radius: 50%;
+    background: radial-gradient(circle at center, rgba(31,182,166,.30), transparent 70%);
+  }
+  .brand { display: flex; align-items: baseline; gap: 10px; }
+  .brand .name { font-size: 19px; font-weight: 800; letter-spacing: .2px; }
+  .brand .name b { color: var(--teal); font-weight: 800; }
+  .brand .by { font-size: 10px; color: #b9c6d8; }
+  .brand .by b { color: #d6deea; font-weight: 700; }
+  h1 { font-size: 26px; line-height: 1.08; font-weight: 800; margin: 9px 0 6px; max-width: 93%; }
+  .sub { font-size: 11px; line-height: 1.42; color: #d6deea; max-width: 96%; }
+
+  /* ---- Proof band: tagline + stats + motif ---- */
+  .band { display: grid; grid-template-columns: 1.04fr 1fr; gap: 16px; margin-top: 12px; align-items: stretch; }
+  .proof { background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--teal); border-radius: 10px; padding: 12px 14px; }
+  .proof h2 { font-size: 14.5px; color: var(--navy); margin-bottom: 7px; }
+  .stats { display: flex; gap: 14px; }
+  .stat .v { font-size: 21px; font-weight: 800; color: var(--teal-d); line-height: 1; }
+  .stat .l { font-size: 8.6px; color: var(--dim); line-height: 1.3; margin-top: 4px; display: block; }
+  .foot-note { font-size: 7.6px; color: #93a1b0; margin-top: 9px; line-height: 1.3; }
+
+  .motif { background: var(--navy); border-radius: 10px; padding: 8px 10px 4px; color: #cfe9e6; }
+  .motif .cap { font-size: 9px; color: #9fb3c8; text-align: center; margin-top: 2px; }
+  .motif svg { width: 100%; height: auto; display: block; }
+
+  /* ---- Cards ---- */
+  .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 12px; }
+  .card { background: #fff; border: 1px solid var(--line); border-top: 3px solid var(--teal); border-radius: 9px; padding: 10px 11px; }
+  .card h3 { font-size: 11px; color: var(--navy); margin-bottom: 5px; }
+  .card h3 b { color: var(--teal-d); font-weight: 800; }
+  .card p { font-size: 8.7px; line-height: 1.4; color: var(--dim); }
+
+  /* ---- Matrix ---- */
+  .matx-h { display: flex; align-items: baseline; gap: 8px; margin: 14px 0 6px; }
+  .matx-h h2 { font-size: 14px; color: var(--navy); }
+  .matx-h span { font-size: 9px; color: var(--dim); }
+  table { width: 100%; border-collapse: collapse; border-radius: 9px; overflow: hidden; border: 1px solid var(--line); }
+  th, td { text-align: left; vertical-align: top; padding: 5px 8px; font-size: 8.4px; line-height: 1.32; }
+  thead th { background: var(--navy); color: #fff; font-size: 8.8px; font-weight: 700; }
+  thead th.rf { background: var(--teal-d); }
+  th.feat, td.feat { width: 22%; font-weight: 700; color: var(--navy); background: #fbfcfd; }
+  td.std { width: 38%; color: var(--dim); border-left: 1px solid var(--line); }
+  td.rf { width: 40%; background: var(--teal-bg); color: #134e48; border-left: 1px solid #cdeae6; font-weight: 500; }
+  tbody tr { border-top: 1px solid var(--line); }
+  tbody tr:first-child td { border-top: none; }
+  .star { color: var(--teal-d); font-weight: 800; }
+</style>
+</head>
+<body>
+
+  <header class="hero">
+    <div class="brand">
+      <span class="name">The <b>Fabric</b> Suite</span>
+      <span class="by">DSC<b>Forge</b> &middot; Config<b>Fabric</b> &middot; Repo<b>Fabric</b></span>
+    </div>
+    <h1>One closed loop from a prompt to a proven, enforced, peer-delivered desired state.</h1>
+    <p class="sub">DSCForge authors and proves DSC&nbsp;v3 configs, ConfigFabric assigns them by Entra device group and enforces state on endpoints, and RepoFabric delivers the apps those configs need over LAN peers. Three products, one Entra sign-in, one UPN-attributed audit ledger, one Gitea store, and one <span class="mono">docker compose</span> deployment.</p>
+  </header>
+
+  <section class="band">
+    <div class="proof">
+      <h2>Author it. Prove it. Enforce it. Deliver it.</h2>
+      <div class="stats">
+        <div class="stat"><span class="v">1 loop</span><span class="l">author, prove, enforce, deliver,<br>then lock the build back*</span></div>
+        <div class="stat"><span class="v">1 compose</span><span class="l">three products on one identity,<br>one audit ledger, one store</span></div>
+      </div>
+      <p class="foot-note">*The loop is the differentiator. A config DSCForge publishes carries a <span class="mono">metadata.configFabric</span> block that declares the exact app builds it needs, and ConfigFabric records that as a version lock. Before RepoFabric prunes a build it asks ConfigFabric whether a live config still depends on it, and the gate fails closed. Standalone, with no peer configured, the gate is a clean no-op, so reverts are never blocked.</p>
+    </div>
+
+    <div class="motif">
+      <svg viewBox="0 0 360 150" role="img" aria-label="Three stacked layers, DSCForge authors and proves, ConfigFabric assigns and enforces, RepoFabric delivers over LAN peers, with a version-lock return arc and one shared control plane underneath.">
+        <defs>
+          <marker id="ah" markerWidth="7" markerHeight="7" refX="5.5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="#1FB6A6"/>
+          </marker>
+          <marker id="ahb" markerWidth="7" markerHeight="7" refX="5.5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="#7fdcd2"/>
+          </marker>
+        </defs>
+
+        <!-- Layer 1: DSCForge -->
+        <rect x="24" y="10" width="240" height="26" rx="5" fill="#0e3a36" stroke="#1FB6A6" stroke-width="1.4"/>
+        <text x="34" y="27" fill="#cfe9e6" font-size="9" font-weight="700" font-family="-apple-system,Segoe UI,sans-serif">DSCForge</text>
+        <text x="254" y="27" fill="#7fdcd2" font-size="7.5" text-anchor="end" font-family="-apple-system,Segoe UI,sans-serif">author and prove</text>
+
+        <!-- Layer 2: ConfigFabric -->
+        <rect x="24" y="52" width="240" height="26" rx="5" fill="#0e3a36" stroke="#1FB6A6" stroke-width="1.4"/>
+        <text x="34" y="69" fill="#cfe9e6" font-size="9" font-weight="700" font-family="-apple-system,Segoe UI,sans-serif">ConfigFabric</text>
+        <text x="254" y="69" fill="#7fdcd2" font-size="7.5" text-anchor="end" font-family="-apple-system,Segoe UI,sans-serif">assign and enforce</text>
+
+        <!-- Layer 3: RepoFabric -->
+        <rect x="24" y="94" width="240" height="26" rx="5" fill="#0e3a36" stroke="#1FB6A6" stroke-width="1.4"/>
+        <text x="34" y="111" fill="#cfe9e6" font-size="9" font-weight="700" font-family="-apple-system,Segoe UI,sans-serif">RepoFabric</text>
+        <text x="254" y="111" fill="#7fdcd2" font-size="7.5" text-anchor="end" font-family="-apple-system,Segoe UI,sans-serif">deliver over LAN peers</text>
+
+        <!-- lifecycle flow arrows -->
+        <g fill="none" stroke="#1FB6A6" stroke-width="1.6">
+          <line x1="112" y1="36" x2="112" y2="51" marker-end="url(#ah)"/>
+          <line x1="112" y1="78" x2="112" y2="93" marker-end="url(#ah)"/>
+        </g>
+        <g fill="#9fb3c8" font-size="6.5" font-family="-apple-system,Segoe UI,sans-serif">
+          <text x="120" y="47">publish</text>
+          <text x="120" y="89">requires</text>
+        </g>
+
+        <!-- version-lock return arc: RepoFabric asks ConfigFabric before pruning -->
+        <path d="M264 104 C 298 102, 298 76, 264 76" fill="none" stroke="#7fdcd2" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#ahb)"/>
+        <text x="304" y="87" fill="#9fb3c8" font-size="6.5" font-family="-apple-system,Segoe UI,sans-serif">version lock</text>
+        <text x="304" y="96" fill="#9fb3c8" font-size="6.5" font-family="-apple-system,Segoe UI,sans-serif">fails closed</text>
+
+        <!-- connectors tying the stack to the shared base -->
+        <g stroke="#1FB6A6" stroke-width="1" stroke-dasharray="2 2" opacity="0.75">
+          <line x1="60" y1="120" x2="60" y2="128"/>
+          <line x1="144" y1="120" x2="144" y2="128"/>
+          <line x1="228" y1="120" x2="228" y2="128"/>
+        </g>
+
+        <!-- shared control plane foundation -->
+        <rect x="14" y="128" width="332" height="18" rx="5" fill="#10243f" stroke="#33506f" stroke-width="1.2"/>
+        <text x="180" y="140" fill="#cfe9e6" font-size="6.8" text-anchor="middle" font-family="-apple-system,Segoe UI,sans-serif">one control plane: Entra sign-in, UPN audit ledger, Gitea store, one docker compose</text>
+      </svg>
+      <div class="cap">Three layers, one control plane, one closed loop.</div>
+    </div>
+  </section>
+
+  <section class="cards">
+    <div class="card"><h3>DSC<b>Forge</b> authors and proves</h3><p>The forge. Turn natural language, GPO exports, and live system scans into schema-validated DSC&nbsp;v3 YAML across a pool of local or cloud models with failover and a side-by-side QA gate. Prove a draft on real Hyper-V, Proxmox, UNRAID, or physical targets that revert clean, then publish a ConfigFabric-ready document on the DSC v3 schema version you pin, anything from 3.0.0 to the latest.</p></div>
+    <div class="card"><h3>Config<b>Fabric</b> assigns and enforces</h3><p>The desired-state layer. Assign proven configs by transitive Entra device-group membership. Configs declare phase and prerequisites, the service emits a topologically ordered manifest, and endpoints apply with <span class="mono">dsc config set</span> in Detect or Apply mode. Triggers via Intune, scheduled task, or interactive SYSTEM, with no Windows service to install.</p></div>
+    <div class="card"><h3>Repo<b>Fabric</b> delivers</h3><p>The delivery fabric. A private <span class="mono">winget</span> source that serves only vetted builds and advertises <span class="mono">PeerDist</span> hashes, so BranchCache and Delivery Optimization pull installers from a LAN peer. Curated auto-update syncs approved builds from public <span class="mono">winget</span>, with a one-click Intune policy export and a WAN-savings dashboard over 7 / 30 / 90 days.</p></div>
+    <div class="card"><h3>One control plane binds them</h3><p>The shared substrate, not glue. One Entra sign-in, one UPN-attributed audit ledger where publish, promote, and revert events are stamped by source fabric, one Gitea store, and one deployment. A version-lock ledger records the builds enforced state depends on, so cleanup cannot prune them. Run all three together, or stand one up at a time.</p></div>
+  </section>
+
+  <div class="matx-h">
+    <h2>What the integration buys you</h2>
+    <span>The suite versus a stitched toolchain. <span class="star">&#9733;</span> marks capabilities only possible because the three share one fabric.</span>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th class="feat">Capability</th>
+        <th>Separate point tools, stitched by hand</th>
+        <th class="rf">The Fabric Suite</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="feat"><span class="star">&#9733;</span> Author straight to enforce</td>
+        <td class="std">Author a config in one tool, then export and re-import it into a separate assignment system by hand.</td>
+        <td class="rf">DSCForge publishes a proven config as a ConfigFabric-ready document for Entra device-group assignment, with no re-keying.</td>
+      </tr>
+      <tr>
+        <td class="feat"><span class="star">&#9733;</span> Lock the build a live config needs</td>
+        <td class="std">A cleanup job prunes an installer a live policy still depends on, and the next remediation breaks silently.</td>
+        <td class="rf">Published configs register version locks, and RepoFabric asks the ledger before pruning. The gate fails closed.</td>
+      </tr>
+      <tr>
+        <td class="feat"><span class="star">&#9733;</span> Catalog check at author time</td>
+        <td class="std">You learn a required app is missing from the source only when the apply fails on the endpoint.</td>
+        <td class="rf">DSCForge checks each app against RepoFabric's catalog for presence, promotion stage, and repo coherence while you author. It degrades open and never blocks.</td>
+      </tr>
+      <tr>
+        <td class="feat"><span class="star">&#9733;</span> One identity and one audit trail</td>
+        <td class="std">Each tool has its own login and its own log, so reconstructing who changed what spans several systems.</td>
+        <td class="rf">One Entra sign-in and one UPN-attributed ledger span authoring, assignment, and delivery, events tagged by source fabric.</td>
+      </tr>
+      <tr>
+        <td class="feat">Serve only vetted, and prove it</td>
+        <td class="std">Policy export from one product, app curation from another, with nothing tying the two together.</td>
+        <td class="rf">RepoFabric curates vetted builds and exports the policy to block the public repo, while ConfigFabric enforces the state that consumes them.</td>
+      </tr>
+      <tr>
+        <td class="feat">Proven before enforced</td>
+        <td class="std">Configs go live untested, or you stand up and tear down your own test VMs by hand.</td>
+        <td class="rf">DSCForge proves a draft on real Hyper-V, Proxmox, UNRAID, or physical targets that revert clean before ConfigFabric ever assigns it.</td>
+      </tr>
+      <tr>
+        <td class="feat">Reaches the endpoint</td>
+        <td class="std">Triggered by whichever agent each tool ships, often a service per product to install and patch.</td>
+        <td class="rf">ConfigFabric runs via Intune Proactive Remediation, scheduled task, or interactive SYSTEM with no service installed, and reports to Log Analytics and the client event log.</td>
+      </tr>
+      <tr>
+        <td class="feat">One deployment, shared store</td>
+        <td class="std">Stand up and maintain three stacks with their own installers, ports, and backing stores.</td>
+        <td class="rf">One <span class="mono">docker compose</span> deployment on a shared Gitea store. ConfigFabric bolts on as a sidecar, RepoFabric allocates ports and brings missing supporting services.</td>
+      </tr>
+    </tbody>
+  </table>
+
+</body>
+</html>

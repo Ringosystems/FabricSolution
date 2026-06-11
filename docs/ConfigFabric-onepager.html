@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ConfigFabric one-pager</title>
+<style>
+  /* ---- Page ---- */
+  @page { size: Letter; margin: 0.34in; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy:   #0B2545;
+    --navy-2: #133b6b;
+    --teal:   #1FB6A6;
+    --teal-d: #0E8C80;
+    --teal-bg:#E9F9F7;
+    --ink:    #1c2733;
+    --dim:    #5b6b7b;
+    --line:   #e2e8ee;
+    --panel:  #F5F7F9;
+    --mono:   "Cascadia Code", Consolas, ui-monospace, monospace;
+    --sans:   -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  html, body { font-family: var(--sans); color: var(--ink); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { width: 7.82in; }
+  .mono { font-family: var(--mono); font-size: 0.93em; }
+
+  /* ---- Header band ---- */
+  .hero {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 100%);
+    color: #fff; border-radius: 12px; padding: 18px 22px 16px;
+    position: relative; overflow: hidden;
+  }
+  .hero::after {
+    content: ""; position: absolute; right: -60px; top: -60px;
+    width: 220px; height: 220px; border-radius: 50%;
+    background: radial-gradient(circle at center, rgba(31,182,166,.30), transparent 70%);
+  }
+  .brand { display: flex; align-items: baseline; gap: 8px; }
+  .brand .name { font-size: 19px; font-weight: 800; letter-spacing: .2px; }
+  .brand .name b { color: var(--teal); font-weight: 800; }
+  .brand .by { font-size: 10.5px; color: #b9c6d8; }
+  .pill { font-size: 8px; letter-spacing:.3px; color: #0B2545; background: var(--teal); padding: 2px 7px; border-radius: 999px; font-weight:800; text-transform: uppercase; }
+  h1 { font-size: 26px; line-height: 1.08; font-weight: 800; margin: 9px 0 6px; max-width: 90%; }
+  .sub { font-size: 11px; line-height: 1.42; color: #d6deea; max-width: 94%; }
+
+  /* ---- Proof band: tagline + stats + motif ---- */
+  .band { display: grid; grid-template-columns: 1.15fr 1fr; gap: 16px; margin-top: 12px; align-items: stretch; }
+  .proof { background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--teal); border-radius: 10px; padding: 12px 14px; }
+  .proof h2 { font-size: 14.5px; color: var(--navy); margin-bottom: 7px; }
+  .stats { display: flex; gap: 14px; }
+  .stat .v { font-size: 21px; font-weight: 800; color: var(--teal-d); line-height: 1; }
+  .stat .l { font-size: 8.6px; color: var(--dim); line-height: 1.3; margin-top: 4px; display: block; }
+  .foot-note { font-size: 7.6px; color: #93a1b0; margin-top: 9px; line-height: 1.3; }
+
+  .motif { background: var(--navy); border-radius: 10px; padding: 8px 10px 4px; color: #cfe9e6; }
+  .motif .cap { font-size: 9px; color: #9fb3c8; text-align: center; margin-top: 2px; }
+  .motif svg { width: 100%; height: auto; display: block; }
+
+  /* ---- Cards ---- */
+  .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 12px; }
+  .card { background: #fff; border: 1px solid var(--line); border-top: 3px solid var(--teal); border-radius: 9px; padding: 10px 11px; }
+  .card h3 { font-size: 11px; color: var(--navy); margin-bottom: 5px; }
+  .card p { font-size: 8.7px; line-height: 1.4; color: var(--dim); }
+
+  /* ---- Matrix ---- */
+  .matx-h { display: flex; align-items: baseline; gap: 8px; margin: 14px 0 6px; }
+  .matx-h h2 { font-size: 14px; color: var(--navy); }
+  .matx-h span { font-size: 9px; color: var(--dim); }
+  table { width: 100%; border-collapse: collapse; border-radius: 9px; overflow: hidden; border: 1px solid var(--line); }
+  th, td { text-align: left; vertical-align: top; padding: 5px 8px; font-size: 8.4px; line-height: 1.32; }
+  thead th { background: var(--navy); color: #fff; font-size: 8.8px; font-weight: 700; }
+  thead th.rf { background: var(--teal-d); }
+  th.feat, td.feat { width: 22%; font-weight: 700; color: var(--navy); background: #fbfcfd; }
+  td.std { width: 38%; color: var(--dim); border-left: 1px solid var(--line); }
+  td.rf { width: 40%; background: var(--teal-bg); color: #134e48; border-left: 1px solid #cdeae6; font-weight: 500; }
+  tbody tr { border-top: 1px solid var(--line); }
+  tbody tr:first-child td { border-top: none; }
+  .star { color: var(--teal-d); font-weight: 800; }
+</style>
+</head>
+<body>
+
+  <header class="hero">
+    <div class="brand">
+      <span class="name">Config<b>Fabric</b></span>
+      <span class="pill">adds to RepoFabric</span>
+    </div>
+    <h1>RepoFabric delivers the app. ConfigFabric makes sure it's configured right.</h1>
+    <p class="sub">ConfigFabric is the desired-state layer that rides on top of RepoFabric. It assigns DSC&nbsp;v3 configurations to endpoints by Entra group, applies them in dependency order, reports compliance, and locks the exact app versions your configs depend on so RepoFabric never prunes a build out from under a live policy. One deployment, the same admin surface.</p>
+  </header>
+
+  <section class="band">
+    <div class="proof">
+      <h2>Delivery and configuration, one fabric.</h2>
+      <div class="stats">
+        <div class="stat"><span class="v">Group&#8209;driven</span><span class="l">Entra device groups decide<br>which configs land where</span></div>
+        <div class="stat"><span class="v">Bidirectional</span><span class="l">configs lock the app versions<br>RepoFabric must not prune*</span></div>
+      </div>
+      <p class="foot-note">*A published configuration that requires a specific app version registers a lock. RepoFabric consults that lock before pruning, so cleanup never breaks a configuration that is live on the fleet. The lock gate fails closed.</p>
+    </div>
+
+    <div class="motif">
+      <svg viewBox="0 0 360 104" role="img" aria-label="RepoFabric delivers apps; ConfigFabric assigns and enforces configuration on top, with a version lock back to RepoFabric.">
+        <defs>
+          <marker id="ah" markerWidth="7" markerHeight="7" refX="5.5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="#1FB6A6"/>
+          </marker>
+          <marker id="ahb" markerWidth="7" markerHeight="7" refX="5.5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="#7fdcd2"/>
+          </marker>
+        </defs>
+        <!-- RepoFabric layer -->
+        <rect x="8" y="14" width="92" height="26" rx="6" fill="#10243f" stroke="#33506f"/>
+        <text x="54" y="27" fill="#9fb3c8" font-size="8" text-anchor="middle" font-family="-apple-system,Segoe UI,sans-serif">RepoFabric</text>
+        <text x="54" y="36" fill="#6f86a0" font-size="6.5" text-anchor="middle" font-family="-apple-system,Segoe UI,sans-serif">app delivery</text>
+        <!-- ConfigFabric layer -->
+        <rect x="8" y="62" width="92" height="28" rx="6" fill="#0e3a36" stroke="#1FB6A6"/>
+        <text x="54" y="76" fill="#cfe9e6" font-size="8" text-anchor="middle" font-family="-apple-system,Segoe UI,sans-serif">ConfigFabric</text>
+        <text x="54" y="85" fill="#7fdcd2" font-size="6.5" text-anchor="middle" font-family="-apple-system,Segoe UI,sans-serif">desired-state layer</text>
+        <!-- version lock loop between the two layers -->
+        <path d="M100 70 q34 -6 34 -18 q0 -12 -34 -12" fill="none" stroke="#7fdcd2" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#ahb)"/>
+        <text x="150" y="52" fill="#9fb3c8" font-size="6.5" text-anchor="middle">version lock</text>
+        <!-- endpoints -->
+        <g fill="#0e3a36" stroke="#1FB6A6" stroke-width="1.4">
+          <rect x="206" y="24" width="30" height="20" rx="3"/>
+          <rect x="262" y="24" width="30" height="20" rx="3"/>
+          <rect x="318" y="24" width="30" height="20" rx="3"/>
+          <rect x="206" y="60" width="30" height="20" rx="3"/>
+          <rect x="262" y="60" width="30" height="20" rx="3"/>
+          <rect x="318" y="60" width="30" height="20" rx="3"/>
+        </g>
+        <!-- assignment arrows -->
+        <g fill="none" stroke="#1FB6A6" stroke-width="1.6">
+          <path d="M100 76 C 150 76, 160 34, 206 34" marker-end="url(#ah)"/>
+          <path d="M100 78 C 150 78, 170 70, 206 70" marker-end="url(#ah)"/>
+        </g>
+        <text x="250" y="98" fill="#cfe9e6" font-size="8" text-anchor="middle" font-family="-apple-system,Segoe UI,sans-serif">configs applied in dependency order, by Entra group</text>
+      </svg>
+      <div class="cap">RepoFabric ships the bits. ConfigFabric enforces the state.</div>
+    </div>
+  </section>
+
+  <section class="cards">
+    <div class="card"><h3>Group-driven assignment</h3><p>Endpoints check in, the service resolves their Entra device groups, and only the configurations assigned to those groups come back, ordered and validated. Cloud-native and Hybrid devices both supported.</p></div>
+    <div class="card"><h3>Dependency-aware ordering</h3><p>Configs declare a phase and explicit prerequisites. The service composes a topologically-sorted manifest, so prerequisite configs apply first and a failed prerequisite halts only its dependents.</p></div>
+    <div class="card"><h3>Version-lock protection</h3><p>A live configuration locks the exact app versions it needs. RepoFabric checks the lock before pruning, so retention cleanup never deletes a build a deployed policy still depends on.</p></div>
+    <div class="card"><h3>Same surface, one stack</h3><p>Entra-gated browser portals, an Entra-attributed audit ledger, and a single <span class="mono">docker compose</span> deployment that shares RepoFabric's Gitea backing store when bolted on.</p></div>
+  </section>
+
+  <div class="matx-h">
+    <h2>What it adds on top of RepoFabric</h2>
+    <span>RepoFabric covers delivery. <span class="star">&#9733;</span> marks the configuration capabilities ConfigFabric layers on.</span>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th class="feat">Capability</th>
+        <th>RepoFabric alone (delivery fabric)</th>
+        <th class="rf">RepoFabric + ConfigFabric</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="feat"><span class="star">&#9733;</span> Desired-state enforcement</td>
+        <td class="std">Delivers approved app builds to endpoints over a private <span class="mono">winget</span> source. Configuration of the endpoint itself is out of band.</td>
+        <td class="rf">Applies DSC&nbsp;v3 configurations on the endpoint with <span class="mono">dsc&nbsp;config&nbsp;set</span>, in Detect (report drift) or Apply (remediate) mode, from one client engine.</td>
+      </tr>
+      <tr>
+        <td class="feat"><span class="star">&#9733;</span> Group-based config assignment</td>
+        <td class="std">Endpoints point at a repo by URL; what they install is user-driven within that catalog.</td>
+        <td class="rf">A check-in resolves transitive Entra device-group membership and returns exactly the configs assigned to those groups. User-group assignment is on the roadmap.</td>
+      </tr>
+      <tr>
+        <td class="feat"><span class="star">&#9733;</span> Prerequisite &amp; phase ordering</td>
+        <td class="std">No notion of config-level prerequisites or ordered application phases.</td>
+        <td class="rf">Configs declare phases and dependency edges; the service emits a validated, acyclic, topologically-ordered manifest and halts dependents on a failed prerequisite.</td>
+      </tr>
+      <tr>
+        <td class="feat"><span class="star">&#9733;</span> Bidirectional version lock</td>
+        <td class="std">Retention and cleanup can prune old app versions with no knowledge of what depends on them.</td>
+        <td class="rf">Published configs register version locks; RepoFabric consults the lock ledger before pruning and the gate fails closed, so cleanup never breaks a live policy.</td>
+      </tr>
+      <tr>
+        <td class="feat"><span class="star">&#9733;</span> Prerequisite resolvability checks</td>
+        <td class="std">A config's app prerequisite can only be asserted, never verified against the catalog.</td>
+        <td class="rf">When bolted on, the resolver validates app prerequisites against RepoFabric's catalog: version satisfaction, virtual-repo coherence, and promotion stage.</td>
+      </tr>
+      <tr>
+        <td class="feat">Compliance reporting</td>
+        <td class="std">Activity feed and dashboards for publish, sync, and service actions.</td>
+        <td class="rf">Adds per-device check-in, download, and compliance telemetry to Log Analytics (sparse on no-change, verbose on apply/failure) plus a client-side Windows event log.</td>
+      </tr>
+      <tr>
+        <td class="feat">Endpoint triggers</td>
+        <td class="std">Endpoints pull installs at the user's discretion.</td>
+        <td class="rf">Intune Proactive Remediation, scheduled task (servers and future Arc), and interactive SYSTEM run, all over one engine, with no Windows service installed.</td>
+      </tr>
+      <tr>
+        <td class="feat">Deployment &amp; auth</td>
+        <td class="std">Browser admin, Entra sign-in, Gitea backing store, one container stack.</td>
+        <td class="rf">Reuses the same Entra sign-in, UPN-attributed audit ledger, and Gitea store; ships standalone or bolts on as a sidecar with no parallel infrastructure.</td>
+      </tr>
+    </tbody>
+  </table>
+
+</body>
+</html>

@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>DSCForge one-pager</title>
+<style>
+  /* ---- Page ---- */
+  @page { size: Letter; margin: 0.34in; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy:   #0B2545;
+    --navy-2: #133b6b;
+    --teal:   #1FB6A6;
+    --teal-d: #0E8C80;
+    --teal-bg:#E9F9F7;
+    --ink:    #1c2733;
+    --dim:    #5b6b7b;
+    --line:   #e2e8ee;
+    --panel:  #F5F7F9;
+    --mono:   "Cascadia Code", Consolas, ui-monospace, monospace;
+    --sans:   -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  html, body { font-family: var(--sans); color: var(--ink); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { width: 7.82in; }
+  .mono { font-family: var(--mono); font-size: 0.93em; }
+
+  /* ---- Header band ---- */
+  .hero {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 100%);
+    color: #fff; border-radius: 12px; padding: 18px 22px 16px;
+    position: relative; overflow: hidden;
+  }
+  .hero::after {
+    content: ""; position: absolute; right: -60px; top: -60px;
+    width: 220px; height: 220px; border-radius: 50%;
+    background: radial-gradient(circle at center, rgba(31,182,166,.30), transparent 70%);
+  }
+  .brand { display: flex; align-items: baseline; gap: 8px; }
+  .brand .name { font-size: 19px; font-weight: 800; letter-spacing: .2px; }
+  .brand .name b { color: var(--teal); font-weight: 800; }
+  .brand .by { font-size: 10.5px; color: #b9c6d8; }
+  h1 { font-size: 26px; line-height: 1.08; font-weight: 800; margin: 9px 0 6px; max-width: 88%; }
+  .sub { font-size: 11px; line-height: 1.42; color: #d6deea; max-width: 94%; }
+
+  /* ---- Proof band: tagline + stats + motif ---- */
+  .band { display: grid; grid-template-columns: 1.15fr 1fr; gap: 16px; margin-top: 12px; align-items: stretch; }
+  .proof { background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--teal); border-radius: 10px; padding: 12px 14px; }
+  .proof h2 { font-size: 14.5px; color: var(--navy); margin-bottom: 7px; }
+  .stats { display: flex; gap: 14px; }
+  .stat .v { font-size: 21px; font-weight: 800; color: var(--teal-d); line-height: 1; }
+  .stat .l { font-size: 8.6px; color: var(--dim); line-height: 1.3; margin-top: 4px; display: block; }
+  .foot-note { font-size: 7.6px; color: #93a1b0; margin-top: 9px; line-height: 1.3; }
+
+  .motif { background: var(--navy); border-radius: 10px; padding: 8px 10px 4px; color: #cfe9e6; }
+  .motif .cap { font-size: 9px; color: #9fb3c8; text-align: center; margin-top: 2px; }
+  .motif svg { width: 100%; height: auto; display: block; }
+
+  /* ---- Cards ---- */
+  .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 12px; }
+  .card { background: #fff; border: 1px solid var(--line); border-top: 3px solid var(--teal); border-radius: 9px; padding: 10px 11px; }
+  .card h3 { font-size: 11px; color: var(--navy); margin-bottom: 5px; }
+  .card p { font-size: 8.7px; line-height: 1.4; color: var(--dim); }
+
+  /* ---- Matrix ---- */
+  .matx-h { display: flex; align-items: baseline; gap: 8px; margin: 14px 0 6px; }
+  .matx-h h2 { font-size: 14px; color: var(--navy); }
+  .matx-h span { font-size: 9px; color: var(--dim); }
+  table { width: 100%; border-collapse: collapse; border-radius: 9px; overflow: hidden; border: 1px solid var(--line); }
+  th, td { text-align: left; vertical-align: top; padding: 5px 8px; font-size: 8.4px; line-height: 1.32; }
+  thead th { background: var(--navy); color: #fff; font-size: 8.8px; font-weight: 700; }
+  thead th.rf { background: var(--teal-d); }
+  th.feat, td.feat { width: 20%; font-weight: 700; color: var(--navy); background: #fbfcfd; }
+  td.std, td.rew { width: 26.6%; color: var(--dim); border-left: 1px solid var(--line); }
+  td.rf { width: 26.8%; background: var(--teal-bg); color: #134e48; border-left: 1px solid #cdeae6; font-weight: 500; }
+  tbody tr { border-top: 1px solid var(--line); }
+  tbody tr:first-child td { border-top: none; }
+  .star { color: var(--teal-d); font-weight: 800; }
+
+</style>
+</head>
+<body>
+
+  <header class="hero">
+    <div class="brand"><span class="name">DSC<b>Forge</b></span></div>
+    <h1>Stop hand-authoring DSC&nbsp;v3 YAML one property at a time.</h1>
+    <p class="sub">DSCForge is a web-based DSC&nbsp;v3 authoring studio that turns natural language, GPO exports, and live system scans into schema-validated configurations, proves them on real Hyper-V, Proxmox, UNRAID, and physical targets, then publishes them to ConfigFabric and Intune, all from one local HTTPS server.</p>
+  </header>
+
+  <section class="band">
+    <div class="proof">
+      <h2>Describe it. Validate it. Prove it on real hardware.</h2>
+      <div class="stats">
+        <div class="stat"><span class="v">Multi-model</span><span class="l">local or cloud LLMs, compared<br>side-by-side with a QA gate</span></div>
+        <div class="stat"><span class="v">Proven</span><span class="l">applied on real targets,<br>reverted to a clean state*</span></div>
+      </div>
+      <p class="foot-note">*Push a draft to a disposable Hyper-V, Proxmox, UNRAID, or physical target, apply it with the DSC&nbsp;v3 CLI, read the real result, then revert to a clean snapshot. You validate on hardware, not on hope. Physical targets revert via the Unified Write Filter on reboot.</p>
+    </div>
+
+    <div class="motif">
+      <svg viewBox="0 0 360 104" role="img" aria-label="Prompt, GPO, and scan inputs feed DSCForge, which generates and validates a config, proves it on a test target that reverts to clean, then publishes it.">
+        <defs>
+          <marker id="ah" markerWidth="7" markerHeight="7" refX="5.5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="#1FB6A6"/>
+          </marker>
+          <marker id="ahb" markerWidth="7" markerHeight="7" refX="5.5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="#7fdcd2"/>
+          </marker>
+        </defs>
+        <!-- inputs -->
+        <g fill="#10243f" stroke="#33506f" stroke-width="1.2">
+          <rect x="4" y="22" width="48" height="15" rx="3"/>
+          <rect x="4" y="45" width="48" height="15" rx="3"/>
+          <rect x="4" y="68" width="48" height="15" rx="3"/>
+        </g>
+        <g fill="#9fb3c8" font-size="7.5" text-anchor="middle" font-family="-apple-system,Segoe UI,sans-serif">
+          <text x="28" y="32">prompt</text>
+          <text x="28" y="55">GPO</text>
+          <text x="28" y="78">scan</text>
+        </g>
+        <!-- converging arrows into the forge -->
+        <g fill="none" stroke="#1FB6A6" stroke-width="1.4">
+          <path d="M52 29 C70 38, 74 46, 86 49" marker-end="url(#ah)"/>
+          <path d="M52 52 L86 52" marker-end="url(#ah)"/>
+          <path d="M52 75 C70 66, 74 58, 86 55" marker-end="url(#ah)"/>
+        </g>
+        <!-- DSCForge (the forge) -->
+        <rect x="88" y="36" width="80" height="32" rx="6" fill="#0e3a36" stroke="#1FB6A6" stroke-width="1.4"/>
+        <text x="128" y="50" fill="#cfe9e6" font-size="8.5" text-anchor="middle" font-family="-apple-system,Segoe UI,sans-serif">DSCForge</text>
+        <text x="128" y="60" fill="#7fdcd2" font-size="6.5" text-anchor="middle" font-family="-apple-system,Segoe UI,sans-serif">generate, validate, repair</text>
+        <!-- forge to target -->
+        <line x1="168" y1="52" x2="196" y2="52" stroke="#1FB6A6" stroke-width="1.6" marker-end="url(#ah)"/>
+        <!-- test target -->
+        <rect x="198" y="38" width="58" height="28" rx="5" fill="#10243f" stroke="#33506f" stroke-width="1.2"/>
+        <text x="227" y="50" fill="#9fb3c8" font-size="7.5" text-anchor="middle" font-family="-apple-system,Segoe UI,sans-serif">test target</text>
+        <text x="227" y="59" fill="#6f86a0" font-size="6.5" text-anchor="middle" font-family="-apple-system,Segoe UI,sans-serif">apply, revert</text>
+        <!-- revert-to-clean loop over the target -->
+        <path d="M250 38 q-23 -20 -46 0" fill="none" stroke="#7fdcd2" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#ahb)"/>
+        <text x="227" y="20" fill="#9fb3c8" font-size="6.5" text-anchor="middle">revert to clean</text>
+        <!-- target to published -->
+        <line x1="256" y1="52" x2="286" y2="52" stroke="#1FB6A6" stroke-width="1.6" marker-end="url(#ah)"/>
+        <!-- published endpoints -->
+        <g fill="#0e3a36" stroke="#1FB6A6" stroke-width="1.4">
+          <rect x="288" y="42" width="24" height="20" rx="3"/>
+          <rect x="320" y="42" width="24" height="20" rx="3"/>
+        </g>
+        <text x="316" y="74" fill="#7fdcd2" font-size="7" text-anchor="middle" font-family="-apple-system,Segoe UI,sans-serif">published</text>
+        <text x="180" y="98" fill="#cfe9e6" font-size="8.5" text-anchor="middle" font-family="-apple-system,Segoe UI,sans-serif">draft, prove on a real target, then publish</text>
+      </svg>
+      <div class="cap">From a prompt to a proven config, in one studio.</div>
+    </div>
+  </section>
+
+  <section class="cards">
+    <div class="card"><h3>AI authoring, schema-aware</h3><p>Turn natural language into DSC&nbsp;v3 YAML across a pool of local or cloud models. A live validation badge, structure-aware repair, and N-endpoint compare with a QA approve / reject gate keep the output correct, not just plausible.</p></div>
+    <div class="card"><h3>Proven on real hardware</h3><p>Apply a draft on Hyper-V, Proxmox, UNRAID, or a physical device with the Unified Write Filter, read the real result, then revert to a clean snapshot. Gap analysis and per-endpoint token tracking round it out.</p></div>
+    <div class="card"><h3>Brownfield-ready</h3><p>Collect RSoP or a GPO backup and convert Group Policy to DSC&nbsp;v3. Search a full ADMX catalog graded for v3 convertibility, and blend legacy v1 / v2 resources through the <span class="mono">WindowsPowerShell</span> adapter.</p></div>
+    <div class="card"><h3>Hands off to the fabric</h3><p>An Azure Portal-style web UI on a local HTTPS server with auto-generated certificates. Publish validated configs straight to ConfigFabric for group-based assignment, or export for Intune.</p></div>
+  </section>
+
+  <div class="matx-h">
+    <h2>How it compares</h2>
+    <span>Differentiators first. <span class="star">&#9733;</span> marks capabilities the alternatives cannot do out of the box.</span>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th class="feat">Capability</th>
+        <th>Hand-authored DSC&nbsp;v3</th>
+        <th>Generic AI assistant</th>
+        <th class="rf">DSCForge</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="feat"><span class="star">&#9733;</span> Schema-aware generation &amp; repair</td>
+        <td class="std">Type YAML by hand against the schema docs, then run <span class="mono">dsc.exe</span> and read the errors.</td>
+        <td class="rew">Emits plausible YAML with no live schema, so wrong property names and mixed conventions slip through.</td>
+        <td class="rf">Generates against the resource schema, shows a live validation badge, and runs structure-aware repair so native and legacy conventions never mix.</td>
+      </tr>
+      <tr>
+        <td class="feat"><span class="star">&#9733;</span> N-endpoint compare with QA</td>
+        <td class="std">One person, one draft. No second opinion.</td>
+        <td class="rew">One model, one answer. No side-by-side, no approval gate.</td>
+        <td class="rf">Run 2+ endpoints side-by-side with a multi-column diff, then approve or reject the winner in a QA workflow.</td>
+      </tr>
+      <tr>
+        <td class="feat"><span class="star">&#9733;</span> Prove on real targets</td>
+        <td class="std">Stand up and tear down your own test VMs by hand.</td>
+        <td class="rew">No notion of a target. You test it yourself, somewhere else.</td>
+        <td class="rf">Apply on Hyper-V, Proxmox, UNRAID, or physical (UWF) targets, read the real result, then revert to a clean snapshot.</td>
+      </tr>
+      <tr>
+        <td class="feat"><span class="star">&#9733;</span> GPO to DSC&nbsp;v3 conversion</td>
+        <td class="std">Read each policy and translate it to DSC by hand.</td>
+        <td class="rew">Paste settings into a chat and hope the translation is faithful.</td>
+        <td class="rf">Collect RSoP or a GPO backup and convert Administrative Templates, security, audit, firewall, and more to DSC&nbsp;v3.</td>
+      </tr>
+      <tr>
+        <td class="feat">ADMX policy catalog</td>
+        <td class="std">Grep <span class="mono">PolicyDefinitions</span> on disk yourself.</td>
+        <td class="rew">No catalog. Relies on the model's memory.</td>
+        <td class="rf">Searchable ADMX catalog with ADML display names and per-setting DSC&nbsp;v3 convertibility grading.</td>
+      </tr>
+      <tr>
+        <td class="feat">Legacy DSC v1 / v2 resources</td>
+        <td class="std">Author <span class="mono">WindowsPowerShell</span> adapter blocks by hand and keep conventions straight.</td>
+        <td class="rew">Often mixes v3 and legacy property styles in one document.</td>
+        <td class="rf">Blends legacy v1 / v2 via the adapter, including third-party modules introspected from private NuGet repos.</td>
+      </tr>
+      <tr>
+        <td class="feat">AI provider choice</td>
+        <td class="std">Not applicable.</td>
+        <td class="rew">One hosted model, no failover, no usage visibility.</td>
+        <td class="rf">Pool Ollama, GitHub Copilot, llama.cpp, Claude, or any OpenAI-compatible endpoint with priority, failover, and per-endpoint token tracking.</td>
+      </tr>
+      <tr>
+        <td class="feat">Authoring surface &amp; handoff</td>
+        <td class="std">Text editor and CLI. Copy the result wherever it needs to go.</td>
+        <td class="rew">Chat window. Copy-paste into your editor.</td>
+        <td class="rf">Azure Portal-style web UI on a local HTTPS server, then publish validated configs to ConfigFabric or export for Intune.</td>
+      </tr>
+    </tbody>
+  </table>
+
+
+</body>
+</html>

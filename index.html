@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FabricSolution - The Fabric Suite</title>
+<meta name="description" content="One closed loop from a prompt to a proven, enforced, peer-delivered desired state. DSCForge, ConfigFabric, RepoFabric - one control plane.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,400..900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 3a9 9 0 1 1-8.6 11.7' fill='none' stroke='%231FB6A6' stroke-width='2.4' stroke-linecap='round'/%3E%3Cpath d='M2 10.5l1.6 4.6 4.5-1.9' fill='none' stroke='%231FB6A6' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/main.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/",
+    "gsap": "https://cdn.jsdelivr.net/npm/gsap@3.12.7/index.js",
+    "gsap/ScrollTrigger": "https://cdn.jsdelivr.net/npm/gsap@3.12.7/ScrollTrigger.js",
+    "lenis": "https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.mjs"
+  }
+}
+</script>
+</head>
+<body>
+
+<canvas id="gl" aria-hidden="true"></canvas>
+
+<header class="site-header">
+  <a class="brand" href="#top">
+    <svg class="brand__loop" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 3a9 9 0 1 1-8.6 11.7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+      <path d="M2 10.5l1.6 4.6 4.5-1.9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    The <b>Fabric</b> Suite
+  </a>
+  <nav class="site-nav">
+    <span class="site-nav__by"><a class="doc-link" href="docs/DSCForge-onepager.html" target="_blank" rel="noopener">DSC<b>Forge</b></a> &middot; <a class="doc-link" href="docs/ConfigFabric-onepager.html" target="_blank" rel="noopener">Config<b>Fabric</b></a> &middot; <a class="doc-link" href="docs/RepoFabric-comparison-onepager.html" target="_blank" rel="noopener">Repo<b>Fabric</b></a></span>
+    <a class="btn btn--ghost" href="#integration">Why one fabric</a>
+    <a class="btn btn--solid" href="#cta">Deploy the suite</a>
+  </nav>
+</header>
+
+<main id="top">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="hero__content">
+      <p class="hero__eyebrow mono">author &gt; prove &gt; enforce &gt; deliver &gt; lock</p>
+      <h1 class="hero__title">
+        <span class="hl">One closed loop</span>
+        <span class="hl">from a prompt to a proven,</span>
+        <span class="hl">enforced, peer-delivered</span>
+        <span class="hl">desired state.</span>
+      </h1>
+      <p class="hero__subtitle">
+        <span class="hl">DSCForge authors and proves DSC&nbsp;v3 configs. ConfigFabric assigns and enforces them by Entra device group.</span>
+        <span class="hl">RepoFabric delivers the apps those configs need over LAN peers. One sign-in, one ledger, one store, one <span class="mono">docker compose</span>.</span>
+      </p>
+    </div>
+    <div class="hero__scroll-btn"><span><span class="hsbtn-in">scroll to ride the loop</span></span></div>
+  </section>
+
+  <!-- ============ FLOW (scroll-driven scene) ============ -->
+  <section class="flow" id="flow">
+    <div class="flow__steps">
+
+      <div class="flow__step" data-step="1">
+        <div class="flow__card">
+          <div class="flow__header">
+            <div class="flow__number mono">01</div>
+            <h3 class="flow__title"><a class="doc-link" href="docs/DSCForge-onepager.html" target="_blank" rel="noopener">DSC<b>Forge</b></a> authors and proves</h3>
+          </div>
+          <div class="flow__track"><div class="flow__track-fill"></div></div>
+          <p class="flow__description">Prompt, GPO export, and live scan converge in the forge. Schema-validated DSC&nbsp;v3 YAML comes out, compared across a pool of models with a QA gate, then proven on real Hyper-V, Proxmox, UNRAID, or physical targets that revert clean.</p>
+        </div>
+      </div>
+
+      <div class="flow__step" data-step="2">
+        <div class="flow__card">
+          <div class="flow__header">
+            <div class="flow__number mono">02</div>
+            <h3 class="flow__title"><a class="doc-link" href="docs/ConfigFabric-onepager.html" target="_blank" rel="noopener">Config<b>Fabric</b></a> assigns and enforces</h3>
+          </div>
+          <div class="flow__track"><div class="flow__track-fill"></div></div>
+          <p class="flow__description">A proven config publishes straight into the desired-state layer. Entra device groups decide where it lands, phase and prerequisites order the manifest, and endpoints apply it with <span class="mono">dsc config set</span> in Detect or Apply mode. No service to install.</p>
+        </div>
+      </div>
+
+      <div class="flow__step" data-step="3">
+        <div class="flow__card">
+          <div class="flow__header">
+            <div class="flow__number mono">03</div>
+            <h3 class="flow__title"><a class="doc-link" href="docs/RepoFabric-comparison-onepager.html" target="_blank" rel="noopener">Repo<b>Fabric</b></a> delivers</h3>
+          </div>
+          <div class="flow__track"><div class="flow__track-fill"></div></div>
+          <p class="flow__description">The apps those configs need arrive from a private <span class="mono">winget</span> source that serves only vetted builds. One pull crosses the WAN, then <span class="mono">PeerDist</span> hashes let BranchCache and Delivery Optimization hand the installer peer to peer across the subnet.</p>
+        </div>
+      </div>
+
+      <div class="flow__step" data-step="4">
+        <div class="flow__card">
+          <div class="flow__header">
+            <div class="flow__number mono">04</div>
+            <h3 class="flow__title"><a class="doc-link" href="docs/FabricSolution.html" target="_blank" rel="noopener">One control plane</a></h3>
+          </div>
+          <div class="flow__track"><div class="flow__track-fill"></div></div>
+          <p class="flow__description">The config you followed out of the forge is now enforced across the whole field. Underneath all three fabrics: one Entra sign-in, one UPN-attributed audit trail, one Gitea store, one <span class="mono">docker compose</span> - and a version-lock ledger that fails closed, so delivery never breaks a live policy.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ FEATURES ============ -->
+  <section class="features" id="features">
+    <h2 class="features__title">Three layers, one control plane,<br>one closed loop.</h2>
+    <div class="features__grid">
+      <article class="feature">
+        <p class="feature__eyebrow mono">the forge</p>
+        <h3>DSC<b>Forge</b></h3>
+        <p>Turn natural language, GPO exports, and live system scans into schema-validated DSC&nbsp;v3 YAML across local or cloud models with failover and a side-by-side QA gate. Prove drafts on real targets that revert clean, then publish on the schema version you pin.</p>
+      </article>
+      <article class="feature">
+        <p class="feature__eyebrow mono">the desired-state layer</p>
+        <h3>Config<b>Fabric</b></h3>
+        <p>Assign proven configs by transitive Entra device-group membership. Configs declare phase and prerequisites, the service emits a topologically ordered manifest, and endpoints apply in Detect or Apply mode via Intune, scheduled task, or interactive SYSTEM.</p>
+      </article>
+      <article class="feature">
+        <p class="feature__eyebrow mono">the delivery fabric</p>
+        <h3>Repo<b>Fabric</b></h3>
+        <p>A private <span class="mono">winget</span> source that serves only vetted builds and advertises <span class="mono">PeerDist</span> hashes so installers travel the LAN, not the WAN. Curated auto-update, one-click Intune policy export, and a savings dashboard over 7 / 30 / 90 days.</p>
+      </article>
+      <article class="feature">
+        <p class="feature__eyebrow mono">the substrate</p>
+        <h3>One control plane</h3>
+        <p>One Entra sign-in, one UPN-attributed audit ledger stamped by source fabric, one Gitea store, one <span class="mono">docker compose</span> deployment. A version-lock ledger guards the builds enforced state depends on. Run all three together, or stand one up at a time.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============ INTEGRATION ============ -->
+  <section class="integration" id="integration">
+    <div class="integration__head">
+      <h2>What the integration buys you</h2>
+      <p>The suite versus a stitched toolchain. <span class="star">&#9733;</span> marks capabilities only possible because the three share one fabric.</p>
+    </div>
+    <ul class="integration__rows">
+      <li>
+        <h4><span class="star">&#9733;</span> Author straight to enforce</h4>
+        <p>DSCForge publishes a proven config as a ConfigFabric-ready document for Entra device-group assignment, with no re-keying and no export-import shuffle.</p>
+      </li>
+      <li>
+        <h4><span class="star">&#9733;</span> Lock the build a live config needs</h4>
+        <p>Published configs register version locks, and RepoFabric asks the ledger before pruning. The gate fails closed, so cleanup never breaks a live policy.</p>
+      </li>
+      <li>
+        <h4><span class="star">&#9733;</span> Catalog check at author time</h4>
+        <p>DSCForge checks each app against RepoFabric's catalog for presence, promotion stage, and repo coherence while you author. It degrades open and never blocks.</p>
+      </li>
+      <li>
+        <h4><span class="star">&#9733;</span> One identity and one audit trail</h4>
+        <p>One Entra sign-in and one UPN-attributed ledger span authoring, assignment, and delivery, with every event tagged by its source fabric.</p>
+      </li>
+    </ul>
+  </section>
+
+  <!-- ============ CTA ============ -->
+  <section class="cta-section" id="cta">
+    <p class="cta-section__eyebrow mono">one compose. one identity. one loop.</p>
+    <h2>Author it. Prove it.<br>Enforce it. Deliver it.</h2>
+    <a class="btn btn--solid btn--lg" href="#top">Deploy the Fabric Suite</a>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <span>&copy; 2026 RingoSystems Heavy Industries</span>
+  <span class="mono">DSCForge &middot; ConfigFabric &middot; RepoFabric</span>
+</footer>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
