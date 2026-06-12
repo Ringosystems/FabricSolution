@@ -4,15 +4,20 @@
 // emissive hot tip pow() falloff feeding UnrealBloom.
 import * as THREE from 'three';
 
+// Classic Alien (1979) poster palette: a black void broken by a cool, slightly
+// yellow bioluminescent phosphor-green glow. The glow ramp deep -> primary -> hot
+// stays on the green / yellow-green arc so additive bloom flares the hot tip white.
+// Key names are kept (teal*, navy*) so scene.js references need no rename.
 export const COLORS = {
-  navy0: 0x061830,
-  navy: 0x0B2545,
-  panel: 0x10243f,
-  lineStroke: 0x33506f,
-  teal: 0x1FB6A6,
-  tealDeep: 0x0E8C80,
-  tealLight: 0x7fdcd2,
-  ice: 0xE9F9F7,
+  navy0: 0x020503,      // void: near-black, faint green bias so tinted fog reads
+  navy: 0x04110A,       // floor: very dark green-tinted ground
+  panel: 0x102A1C,      // dark green-grey panel / build-box surfaces
+  lineStroke: 0x2E5D3A, // dim green grid + structural edge stroke (kept just under bloom cutoff)
+  teal: 0x7CFC2E,       // glow-primary: the signature radioactive Alien-egg green
+  tealDeep: 0x3FB81C,   // glow-deep: denser green for secondary / peer lines
+  tealLight: 0xE4FF8C,  // glow-hot: near-white yellow-green crack core
+  ice: 0xF4FFE0,        // near-white green-tinted highlight
+  nuclear: 0x66FF14,    // Simpsons reactor-rod green: vivid radioactive glow on the forge bar
 };
 
 const Y = 0.18; // line height above floor

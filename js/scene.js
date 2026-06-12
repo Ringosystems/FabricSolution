@@ -37,19 +37,32 @@ function blockMesh(w, h, d, fill = COLORS.panel, stroke = COLORS.lineStroke) {
   const g = new THREE.Group();
   const box = new THREE.Mesh(
     new THREE.BoxGeometry(w, h, d),
-    new THREE.MeshBasicMaterial({ color: fill })
+    // polygonOffset pushes the filled faces slightly back in the depth buffer so
+    // the coincident wireframe edge lines win the depth test cleanly. Without it
+    // the edge and face share a depth and precision splits each edge into a
+    // strobing dashed pattern. Depth-only offset, nothing shifts on screen.
+    new THREE.MeshBasicMaterial({
+      color: fill,
+      polygonOffset: true,
+      polygonOffsetFactor: 1,
+      polygonOffsetUnits: 1,
+    })
   );
   const edges = new THREE.LineSegments(
     new THREE.EdgesGeometry(box.geometry),
     new THREE.LineBasicMaterial({ color: stroke, transparent: true, opacity: 0.9 })
   );
+  // layer 1 = bloom-excluded. These bright 1px edges bead under UnrealBloom's
+  // mip downsample; keeping them out of the bloom pass (and compositing them back
+  // crisp) removes the crawling blobs while leaving the edges fully bright.
+  edges.layers.set(1);
   box.add(edges);
   box.position.y = h / 2;
   g.add(box);
   return g;
 }
 
-function labelSprite(text, color = '#7fdcd2') {
+function labelSprite(text, color = '#E4FF8C') {
   const pad = 18, fs = 44;
   const cnv = document.createElement('canvas');
   const ctx = cnv.getContext('2d');
@@ -99,34 +112,44 @@ export function buildWorld(scene) {
 
   // DSCForge: power-hammer forge - press head, ram striking a hot bar on an anvil
   const forge = new THREE.Group();
-  const anvil = blockMesh(7, 2.6, 5, 0x0e3a36, COLORS.teal);
+  const anvil = blockMesh(7, 2.6, 5, 0x0C3A18, COLORS.teal);
   forge.add(anvil);
-  const column = blockMesh(3.6, 16, 3, 0x0e3a36, COLORS.teal);
+  const column = blockMesh(3.6, 16, 3, 0x0C3A18, COLORS.teal);
   column.position.set(0, 0, 3.4);
   forge.add(column);
-  const head = blockMesh(6.2, 4, 5, 0x0e3a36, COLORS.teal);
+  const head = blockMesh(6.2, 4, 5, 0x0C3A18, COLORS.teal);
   head.position.y = 12;
   forge.add(head);
-  const ram = blockMesh(2.2, 6, 2.2, 0x0e3a36, COLORS.teal);
+  const ram = blockMesh(2.2, 6, 2.2, 0x0C3A18, COLORS.teal);
   ram.position.y = 5.6;
   forge.add(ram);
   anim.ram = ram;
   const hotBar = new THREE.Mesh(
     new THREE.BoxGeometry(3.6, 0.5, 1.3),
-    new THREE.MeshBasicMaterial({ color: COLORS.tealLight })
+    new THREE.MeshBasicMaterial({ color: COLORS.nuclear })
   );
   hotBar.position.set(0.4, 2.95, 0.4);
   hotBar.rotation.y = 0.35;
   hotBar.renderOrder = 3;
   forge.add(hotBar);
-  const chimney = blockMesh(1.4, 8, 1.4, 0x0e3a36, COLORS.teal);
+  // invisible, never-rendered click target around the rod. Layer 2 is never in the
+  // camera's layer mask, so it never draws, but the easter-egg raycaster tests only
+  // layer 2, giving a forgiving hit area for "click the rod on the forge".
+  const forgeHit = new THREE.Mesh(
+    new THREE.BoxGeometry(5.5, 4.5, 3.5),
+    new THREE.MeshBasicMaterial()
+  );
+  forgeHit.position.copy(hotBar.position);
+  forgeHit.layers.set(2);
+  forge.add(forgeHit);
+  const chimney = blockMesh(1.4, 8, 1.4, 0x0C3A18, COLORS.teal);
   chimney.position.set(-3.6, 0, 3.4);
   chimney.children[0].position.y += 14;
   forge.add(chimney);
   forge.position.copy(FORGE);
   facilities.add(forge);
 
-  // input pylons (prompt / GPO / scan sources)
+  // input pylons (plain language AI chat / GPResults / automated config extract)
   const pylonAt = [[-70, -24], [-56, -28], [-42, -24]];
   pylonAt.forEach(([x, z]) => {
     const p = blockMesh(4, 3.4, 4);
@@ -134,22 +157,78 @@ export function buildWorld(scene) {
     facilities.add(p);
   });
 
+  // Floating source icons hovering over each feed pylon. The supplied line-art
+  // PNGs are keyed at load (blank/white space -> transparent) and recolored to the
+  // phosphor green, then shown on the bloom-excluded layer so the thin strokes stay
+  // crisp instead of beading like the wireframes did.
+  const feederIcons = [];
+  const FEED_ICONS = [
+    { url: 'assets/feeders/aichat.png',   x: -70, z: -24, seed: 0.17 }, // plain language AI chat
+    { url: 'assets/feeders/gpresult.png', x: -56, z: -28, seed: 0.61 }, // GPResults
+    { url: 'assets/feeders/extract.png',  x: -42, z: -24, seed: 0.93 }, // automated configuration extract
+  ];
+  FEED_ICONS.forEach(({ url, x, z, seed }) => {
+    const baseY = 6.6;
+    const mat = new THREE.SpriteMaterial({ transparent: true, depthWrite: false, opacity: 0 });
+    const spr = new THREE.Sprite(mat);
+    spr.layers.set(1);   // bloom-excluded: crisp linework, no bloom beading
+    spr.renderOrder = 6;
+    spr.position.set(x, baseY, z);
+    spr.scale.set(5.6, 5.6, 1);
+    const img = new Image();
+    img.onload = () => {
+      const cnv = document.createElement('canvas');
+      cnv.width = img.width; cnv.height = img.height;
+      const cx = cnv.getContext('2d');
+      cx.drawImage(img, 0, 0);
+      const px = cx.getImageData(0, 0, cnv.width, cnv.height);
+      const d = px.data;
+      const GR = 0x7c, GG = 0xfc, GB = 0x2e;   // glow-primary phosphor green
+      // Keep only the dark strokes. A threshold (not a linear ramp) drops white
+      // backgrounds AND baked-in checkerboard greys, which one source PNG carries
+      // as real pixels rather than true alpha. smoothstep across LO..HI keeps soft
+      // antialiased edges; existing alpha is still honoured for genuine transparency.
+      const LO = 0.38, HI = 0.58;
+      for (let i = 0; i < d.length; i += 4) {
+        const luma = (0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2]) / 255;
+        let k = (luma - LO) / (HI - LO);
+        k = k < 0 ? 0 : k > 1 ? 1 : k;
+        const keep = 1 - k * k * (3 - 2 * k);   // dark -> 1, light/checker -> 0
+        d[i] = GR; d[i + 1] = GG; d[i + 2] = GB;
+        d[i + 3] = Math.round(255 * (d[i + 3] / 255) * keep);
+      }
+      cx.putImageData(px, 0, 0);
+      const tex = new THREE.CanvasTexture(cnv);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      tex.anisotropy = 4;
+      mat.map = tex;
+      mat.opacity = 1;
+      mat.needsUpdate = true;
+      const tall = 5.6;
+      spr.scale.set(tall * (img.width / img.height), tall, 1);
+    };
+    img.src = url;
+    scene.add(spr);
+    feederIcons.push({ spr, baseY, seed });
+  });
+  anim.feederIcons = feederIcons;
+
   // Robot arm factory. kind 'belt' works the conveyor in place;
   // kind 'shelf' swings between a shelf and the line carrying a build box.
   const makeRobot = (lean, kind = 'belt') => {
     const g = new THREE.Group();
-    const base = blockMesh(1.9, 1.2, 1.9, 0x0e3a36, COLORS.teal);
+    const base = blockMesh(1.9, 1.2, 1.9, 0x0C3A18, COLORS.teal);
     g.add(base);
     const armRig = new THREE.Group();
     armRig.position.y = 1.2;
-    const lower = blockMesh(0.9, 3.6, 0.9, 0x0e3a36, COLORS.teal);
+    const lower = blockMesh(0.9, 3.6, 0.9, 0x0C3A18, COLORS.teal);
     armRig.add(lower);
     const elbow = new THREE.Group();
     elbow.position.y = 3.5;
-    const upper = blockMesh(0.75, 3.0, 0.75, 0x0e3a36, COLORS.teal);
+    const upper = blockMesh(0.75, 3.0, 0.75, 0x0C3A18, COLORS.teal);
     elbow.add(upper);
     elbow.rotation.z = -lean * 1.7;
-    const wrist = blockMesh(1.1, 0.8, 1.1, 0x10243f, COLORS.tealLight);
+    const wrist = blockMesh(1.1, 0.8, 1.1, 0x102A1C, COLORS.tealLight);
     wrist.position.y = 2.9;
     elbow.add(wrist);
     armRig.add(elbow);
@@ -157,7 +236,7 @@ export function buildWorld(scene) {
     g.add(armRig);
     const rec = { g, rig: armRig, elbow, lean, kind, baseYaw: 0, yawShelf: 0, yawLine: 0, off: Math.random(), carry: null };
     if (kind === 'shelf') {
-      const carry = blockMesh(1.0, 1.0, 1.0, 0x10243f, COLORS.tealLight);
+      const carry = blockMesh(1.0, 1.0, 1.0, 0x102A1C, COLORS.tealLight);
       carry.position.set(0, 3.4, 0);
       carry.visible = false;
       elbow.add(carry);
@@ -169,11 +248,11 @@ export function buildWorld(scene) {
 
   // ConfigFabric: assembly line - conveyor with robot arms either side, gantries over
   const line = new THREE.Group();
-  const conveyor = blockMesh(26, 1.0, 4, 0x0e3a36, COLORS.teal);
+  const conveyor = blockMesh(26, 1.0, 4, 0x0C3A18, COLORS.teal);
   line.add(conveyor);
   // items riding the belt, machined by the arms (anim.items morph)
   [-9, -3, 3.5, 9.5].forEach((x, i) => {
-    const item = blockMesh(1.6, 1.0, 1.6, 0x10243f, COLORS.tealLight);
+    const item = blockMesh(1.6, 1.0, 1.6, 0x102A1C, COLORS.tealLight);
     item.position.set(x, 1.0, (i % 2) * 0.6 - 0.3);
     line.add(item);
     anim.items.push(item);
@@ -209,7 +288,7 @@ export function buildWorld(scene) {
   const shelfX = [-7, -2.5, 2, 6.5];
   shelfX.forEach((x) => {
     [-7.5, 7.5].forEach((z) => {
-      const shelf = blockMesh(2.2, 6.2, 8.5, 0x0e3a36, COLORS.teal);
+      const shelf = blockMesh(2.2, 6.2, 8.5, 0x0C3A18, COLORS.teal);
       shelf.position.set(x, 0, z);
       library.add(shelf);
       [1.8, 3.6].forEach((y) => {
@@ -255,13 +334,13 @@ export function buildWorld(scene) {
   // Endpoint fleet: a vast array of devices extending into the fog,
   // flanking the route corridor at z ~= 25.
   const glowMat = new THREE.MeshBasicMaterial({ color: COLORS.tealLight });
-  const farGlowMat = new THREE.MeshBasicMaterial({ color: 0x49b3a6 });
+  const farGlowMat = new THREE.MeshBasicMaterial({ color: 0x5FB04A });
   const dimGlowMat = new THREE.MeshBasicMaterial({ color: COLORS.tealDeep });
   const shellMat = new THREE.MeshBasicMaterial({ color: COLORS.panel });
   const makeDevice = (kind, edges, brightP = 0.7) => {
     const lit = edges ? glowMat : farGlowMat;
     const g = new THREE.Group();
-    const fill = 0x0e3a36;
+    const fill = 0x0C3A18;
     if (kind === 0) {
       const base = edges ? blockMesh(2.7, 0.28, 1.9, fill, COLORS.teal)
         : new THREE.Group();
@@ -448,12 +527,12 @@ export function buildWorld(scene) {
   };
 
   // --- Traffic on the route: the followed config + ambient configs ---
-  const heroMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+  const heroMat = new THREE.MeshBasicMaterial({ color: 0xE4FF8C });
   const hero = new THREE.Group();
-  const heroCore = blockMesh(1.5, 1.5, 1.5, 0xffffff, COLORS.tealLight);
+  const heroCore = blockMesh(1.5, 1.5, 1.5, 0xE4FF8C, COLORS.tealLight);
   heroCore.children[0].material = heroMat;
   hero.add(heroCore);
-  const heroBox = blockMesh(1.15, 1.15, 1.15, 0x10243f, COLORS.tealLight);
+  const heroBox = blockMesh(1.15, 1.15, 1.15, 0x102A1C, COLORS.tealLight);
   heroBox.position.y = 1.6;
   heroBox.visible = false;
   hero.add(heroBox);
@@ -464,10 +543,10 @@ export function buildWorld(scene) {
   const packets = [];
   for (let i = 0; i < 8; i += 1) {
     const g = new THREE.Group();
-    const core = blockMesh(1.0, 1.0, 1.0, 0x0e3a36, COLORS.tealLight);
+    const core = blockMesh(1.0, 1.0, 1.0, 0x0C3A18, COLORS.tealLight);
     core.children[0].material = packetMat;
     g.add(core);
-    const box = blockMesh(0.85, 0.85, 0.85, 0x10243f, COLORS.teal);
+    const box = blockMesh(0.85, 0.85, 0.85, 0x102A1C, COLORS.teal);
     box.position.y = 1.1;
     box.visible = false;
     g.add(box);
@@ -480,8 +559,9 @@ export function buildWorld(scene) {
     lines, labels, fleetUnits, anim, markers, W,
     hero: { g: hero, mat: heroMat, box: heroBox },
     packets,
-    colorA: new THREE.Color(0xbffff2),
-    colorB: new THREE.Color(0xffffff),
+    forgeItem: forgeHit,
+    colorA: new THREE.Color(0xDFFFA8),
+    colorB: new THREE.Color(0xF8FFE6),
   };
 }
 
@@ -531,6 +611,18 @@ export function updateWorld(world, camera, progress, entrance, parallax) {
     );
     it.rotation.y = 0.5 * Math.sin(ph * 0.45);
   });
+  // feed-source icons bob up/down at irregular intervals: three incommensurate
+  // sines per icon with a per-icon seed, so peaks land unevenly and the trio
+  // never falls into sync.
+  if (anim.feederIcons) {
+    anim.feederIcons.forEach((ic) => {
+      const s = ic.seed;
+      const bob = 0.50 * Math.sin(t * (0.55 + s * 0.5) + s * 6.3)
+                + 0.30 * Math.sin(t * (0.91 + s * 0.7) + s * 11.1)
+                + 0.20 * Math.sin(t * (1.43 + s * 0.9) + s * 2.7);
+      ic.spr.position.y = ic.baseY + 0.95 * bob;
+    });
+  }
 
   const pFeed = remap(progress, ...W.feeders, 0, 1);
   const pRoute = markers.routeU(progress);

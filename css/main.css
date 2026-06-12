@@ -1,17 +1,19 @@
-/* FabricSolution landing - brand tokens from the Fabric Suite one-pagers */
+/* FabricSolution landing - Classic Alien (1979) poster palette:
+   a black void broken by a cool, slightly yellow bioluminescent phosphor-green
+   glow. Token names are kept from the original brand set; only values changed. */
 :root {
-  --navy-0: #061830;
-  --navy:   #0B2545;
-  --navy-2: #133b6b;
-  --panel:  #10243f;
-  --teal:   #1FB6A6;
-  --teal-d: #0E8C80;
-  --teal-l: #7fdcd2;
-  --ice:    #E9F9F7;
-  --ink:    #d6deea;
-  --dim:    #9fb3c8;
-  --faint:  #6f86a0;
-  --line:   #33506f;
+  --navy-0: #020503;  /* void: near-black, faint green bias */
+  --navy:   #04110A;  /* very dark green-tinted ground */
+  --navy-2: #1B5230;  /* mid-dark green */
+  --panel:  #102A1C;  /* dark green-grey panel surfaces */
+  --teal:   #7CFC2E;  /* glow-primary: signature radioactive Alien green */
+  --teal-d: #3FB81C;  /* glow-deep */
+  --teal-l: #E4FF8C;  /* glow-hot: near-white yellow-green crack core */
+  --ice:    #F4FFE0;  /* near-white green-tinted highlight */
+  --ink:    #d4e6cf;  /* primary text, faint green-grey */
+  --dim:    #a2bd9a;  /* secondary text */
+  --faint:  #738c66;  /* tertiary text */
+  --line:   #2E5D3A;  /* borders + grid line, dim green */
   --font-display: "Archivo", "Segoe UI", sans-serif;
   --font-body: "Archivo", "Segoe UI", sans-serif;
   --font-mono: "IBM Plex Mono", "Cascadia Code", Consolas, monospace;
@@ -54,7 +56,7 @@ b { color: var(--teal); }
   justify-content: space-between;
   padding: 0 var(--pad-x);
   z-index: 30;
-  background: linear-gradient(to bottom, rgba(6,24,48,.82), rgba(6,24,48,0));
+  background: linear-gradient(to bottom, rgba(2,5,3,.82), rgba(2,5,3,0));
 }
 .brand {
   display: flex; align-items: center; gap: 10px;
@@ -144,26 +146,34 @@ main { position: relative; z-index: 10; }
   min-height: 130vh;
   display: flex;
   align-items: center;
+  /* Lift each card half a viewport so it reaches screen-center exactly when the
+     camera reaches that step's facility. The scroll framing (top-bottom ->
+     bottom-bottom) puts a centered card ~0.096 of master-progress BELOW its
+     facility marker, so without this the text only crests the bottom edge as the
+     facility is already sliding off. Transform is visual-only: it shifts nothing
+     in layout, so the scroll length and the camera's progress mapping are
+     untouched. -50vh lands card centers on pCfg/pRepo (0.375/0.625) exactly. */
+  transform: translateY(-50vh);
 }
 .flow__step:nth-child(odd)  { justify-content: flex-end; }
 .flow__step:nth-child(even) { justify-content: flex-start; }
 .flow__card {
   opacity: 0;
   transform: translateY(26px);
-  transition: opacity .6s cubic-bezier(.25,1,.5,1), transform .6s cubic-bezier(.25,1,.5,1);
+  transition: opacity .4s cubic-bezier(.25,1,.5,1), transform .4s cubic-bezier(.25,1,.5,1);
   pointer-events: auto;
   width: min(440px, 88vw);
-  background: rgba(11, 37, 69, 0.62);
+  background: rgba(6, 22, 13, 0.64);
   border: 1px solid var(--line);
   border-radius: 14px;
   padding: 26px 28px 24px;
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  box-shadow: 0 24px 60px rgba(3, 12, 26, 0.45);
+  box-shadow: 0 24px 60px rgba(1, 4, 2, 0.5);
 }
 .flow__card.is-live { opacity: 1; transform: none; }
 .flow__card .flow__description {
-  transition: opacity .5s ease .18s, transform .5s ease .18s;
+  transition: opacity .38s ease .05s, transform .38s ease .05s;
   opacity: 0;
   transform: translateY(10px);
 }
@@ -178,7 +188,7 @@ main { position: relative; z-index: 10; }
 }
 .doc-link:hover {
   border-bottom-color: var(--teal);
-  text-shadow: 0 0 14px rgba(31, 182, 166, 0.55);
+  text-shadow: 0 0 14px rgba(124, 252, 46, 0.55);
 }
 .doc-link:hover::after {
   content: "view one-pager";
@@ -210,7 +220,7 @@ main { position: relative; z-index: 10; }
 }
 .flow__track {
   height: 2px;
-  background: rgba(127, 220, 210, 0.18);
+  background: rgba(228, 255, 140, 0.18);
   border-radius: 999px;
   overflow: hidden;
   margin-bottom: 16px;
@@ -223,6 +233,19 @@ main { position: relative; z-index: 10; }
   transform-origin: left;
 }
 .flow__description { font-size: 14px; line-height: 1.6; color: var(--dim); }
+
+/* ---------- easter egg: reactor rod floats away ---------- */
+.egg-rod {
+  position: fixed;
+  top: 0; left: 0;
+  width: clamp(200px, 24vw, 380px);
+  height: auto;
+  pointer-events: none;
+  z-index: 200;
+  will-change: transform, opacity;
+  border-radius: 8px;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55), 0 0 60px rgba(102, 255, 20, 0.35);
+}
 
 /* ---------- shared section base ---------- */
 .features, .integration, .cta-section {

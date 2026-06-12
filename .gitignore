@@ -1,0 +1,6 @@
+# Playwright verification tooling (tools/verify.cjs, tools/diag.cjs)
+node_modules/
+package-lock.json
+
+# generated keyframe screenshots
+shots/
