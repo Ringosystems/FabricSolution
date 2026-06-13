@@ -25,17 +25,24 @@
   .mono { font-family: var(--mono); font-size: 0.93em; }
 
   /* On-screen viewing only. The print layout above (Letter @page, fixed 7.82in body)
-     is left untouched, so PDF export is identical. On screen the page is centered on a
-     slate backdrop and framed like a document instead of sitting flush top-left. */
+     is left untouched, so PDF export is identical. On screen the document scales to fill
+     the window as large as it can while staying fully visible (fit to window); the inline
+     script at the end of the body sets --s/--tx/--ty. The transform lives inside @media
+     screen, so print and PDF are never scaled. */
   @media screen {
-    html { background: #586473; }
+    html { height: 100%; overflow: hidden; background: #586473; }
     body {
-      width: min(7.82in, 100% - 36px);
-      margin: 30px auto;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 7.82in;
+      margin: 0;
       padding: 0.34in;
       background: #fff;
       border-radius: 12px;
       box-shadow: 0 18px 50px rgba(11, 37, 69, 0.35);
+      transform-origin: 0 0;
+      transform: translate(var(--tx, 0px), var(--ty, 0px)) scale(var(--s, 1));
     }
   }
 
@@ -238,5 +245,23 @@
   </table>
 
 
+<script>
+  // Fit to window: scale the page as large as it goes while staying fully on screen.
+  // Screen only (the transform lives in an @media screen rule), so print/PDF is unscaled.
+  (function () {
+    var b = document.body, root = document.documentElement.style, m = 24;
+    function fit() {
+      var dw = b.offsetWidth, dh = b.offsetHeight; // natural size, unaffected by transform
+      var s = Math.min((innerWidth - 2 * m) / dw, (innerHeight - 2 * m) / dh);
+      if (s < 0.1) s = 0.1;
+      root.setProperty('--s', s);
+      root.setProperty('--tx', Math.max(m, (innerWidth - dw * s) / 2) + 'px');
+      root.setProperty('--ty', Math.max(m, (innerHeight - dh * s) / 2) + 'px');
+    }
+    addEventListener('resize', fit);
+    addEventListener('load', fit);
+    fit();
+  })();
+</script>
 </body>
 </html>
