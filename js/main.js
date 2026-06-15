@@ -287,10 +287,59 @@ if (!isTouch && !reducedMotion) {
   });
 }
 
+// ---------- adaptive quality: dial DPR + bloom down when the GPU can't hold 50fps ----------
+// Post-processing dominates GPU cost here: the scene is drawn twice per frame (once
+// for the bloom pass, once for the composite) at the device pixel ratio, so cost
+// scales with DPR^2. When sustained frame time slips below ~50fps we step the
+// effective resolution and bloom strength down a tier; when it sits comfortably
+// above ~58fps for a while we climb a tier back up. The down/up gap plus a settle
+// delay between changes keeps it from oscillating. (MSAA sample count is baked into
+// the render targets at creation, so it's left alone — DPR already cuts cost faster.)
+const BASE_DPR = Math.min(window.devicePixelRatio, DPR_CAP);
+const BASE_BLOOM = bloom.strength;
+const QUALITY = [
+  { dpr: BASE_DPR,                        bloom: 1.00 },   // tier 0: full
+  { dpr: Math.max(1.00, BASE_DPR * 0.80), bloom: 0.85 },
+  { dpr: Math.max(0.85, BASE_DPR * 0.65), bloom: 0.70 },
+  { dpr: Math.max(0.70, BASE_DPR * 0.50), bloom: 0.55 },   // tier 3: lightest
+];
+let qLevel = 0;
+function applyQuality() {
+  const q = QUALITY[qLevel];
+  const w = window.innerWidth, h = window.innerHeight;
+  renderer.setPixelRatio(q.dpr);
+  renderer.setSize(w, h);
+  bloomComposer.setPixelRatio(q.dpr); bloomComposer.setSize(w, h); // also resizes the bloom pass
+  composer.setPixelRatio(q.dpr);      composer.setSize(w, h);
+  bloom.strength = BASE_BLOOM * q.bloom;
+}
+
+const fpsMon = {
+  frames: 0, accum: 0, sinceChange: 0, warmup: 2.5, goodRun: 0,
+  sample(dtReal) {
+    // warmup: skip the entrance animation + first-load texture decode hitches
+    if (this.warmup > 0) { this.warmup -= dtReal; return; }
+    this.frames += 1; this.accum += dtReal; this.sinceChange += dtReal;
+    if (this.accum < 0.5) return;             // decide on ~0.5s windows
+    const fps = this.frames / this.accum;
+    this.frames = 0; this.accum = 0;
+    if (this.sinceChange < 1.0) return;       // let the last change settle first
+    if (fps < 50 && qLevel < QUALITY.length - 1) {
+      qLevel += 1; applyQuality(); this.sinceChange = 0; this.goodRun = 0;
+    } else if (fps > 58 && qLevel > 0) {
+      this.goodRun += 1;                       // require a sustained good run before climbing back
+      if (this.goodRun >= 4) { qLevel -= 1; applyQuality(); this.sinceChange = 0; this.goodRun = 0; }
+    } else {
+      this.goodRun = 0;
+    }
+  },
+};
+
 // ---------- RAF ----------
 const clock = new THREE.Clock();
 function raf() {
-  const dt = Math.min(clock.getDelta(), 0.05);
+  const rawDt = clock.getDelta();    // true frame time, fed to the fps monitor
+  const dt = Math.min(rawDt, 0.05);  // capped for a stable simulation step
 
   const d = smoothDamp(state.progress, state.target, state.velocity, state.smoothTime, dt);
   state.progress = d.value;
@@ -302,6 +351,7 @@ function raf() {
   }
 
   autoAdvance(dt);
+  fpsMon.sample(rawDt);
 
   const k = 1 - Math.exp(-1.5 * dt);
   state.parallax.lerp(state.pointer, k);
@@ -332,12 +382,12 @@ requestAnimationFrame(raf);
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  composer.setSize(window.innerWidth, window.innerHeight);
-  bloomComposer.setSize(window.innerWidth, window.innerHeight);
-  bloom.setSize(window.innerWidth, window.innerHeight);
+  applyQuality();   // re-applies size at the current quality tier (DPR + bloom)
   ScrollTrigger.refresh();
 });
 
 // expose a debug hook for devtools verification
-window.__fabric = { state, camera, scene, world, composer, bloomComposer, bloom, renderer, BLOOM_EXCLUDE, camHold };
+window.__fabric = {
+  state, camera, scene, world, composer, bloomComposer, bloom, renderer, BLOOM_EXCLUDE, camHold,
+  applyQuality, QUALITY, fpsMon, qualityLevel: () => qLevel, setQuality: (n) => { qLevel = Math.max(0, Math.min(QUALITY.length - 1, n)); applyQuality(); },
+};

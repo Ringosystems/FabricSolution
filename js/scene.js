@@ -577,12 +577,29 @@ const TWO_PI = Math.PI * 2;
 export function updateWorld(world, camera, progress, entrance, parallax) {
   const { lines, labels, anim, markers, W, hero, packets } = world;
 
+  // --- Per-location animation gating (CPU/GPU saver) -----------------------
+  // Each facility's ambient machinery only animates while that location's text is
+  // on screen; once the story scrolls past it the machinery freezes in place
+  // (paused), so we are never driving every location's animation at once. LEAD
+  // mirrors CARD_LEAD in main.js so a facility starts moving as its card arrives.
+  // At the finale the camera lifts to the overview of the whole space (OVERVIEW),
+  // where EVERYTHING runs together again.
+  const LEAD = 0.16;
+  const OVERVIEW = W.overviewLift[0];
+  const allOn = progress >= OVERVIEW;
+  const act = {
+    forge: allOn || progress < markers.pCfg,
+    cfg:   allOn || (progress >= markers.pCfg  - LEAD && progress < markers.pRepo),
+    repo:  allOn || (progress >= markers.pRepo - LEAD && progress < OVERVIEW),
+  };
+
   // ambient machinery
   const t = performance.now() / 1000;
-  if (anim.ram) {
+  if (anim.ram && act.forge) {
     anim.ram.position.y = 5.6 - 2.2 * Math.pow(Math.abs(Math.sin(t * 1.5)), 10);
   }
   anim.robots.forEach((r, i) => {
+    if (!(r.kind === 'belt' ? act.cfg : act.repo)) return;  // paused when its text is off screen
     if (r.kind === 'belt') {
       // work a piece on the belt: settle over it, dip twice, shift along
       const ph = (t * 0.22 + r.off) % 1;
@@ -601,7 +618,7 @@ export function updateWorld(world, camera, progress, entrance, parallax) {
       if (r.carry) r.carry.visible = ph > 0.11 && ph < 0.54;
     }
   });
-  anim.items.forEach((it, i) => {
+  if (act.cfg) anim.items.forEach((it, i) => {
     // the line machines each piece: height and footprint change pass by pass
     const ph = t * 0.5 + i * 1.7;
     it.scale.set(
@@ -614,7 +631,7 @@ export function updateWorld(world, camera, progress, entrance, parallax) {
   // feed-source icons bob up/down at irregular intervals: three incommensurate
   // sines per icon with a per-icon seed, so peaks land unevenly and the trio
   // never falls into sync.
-  if (anim.feederIcons) {
+  if (anim.feederIcons && act.forge) {
     anim.feederIcons.forEach((ic) => {
       const s = ic.seed;
       const bob = 0.50 * Math.sin(t * (0.55 + s * 0.5) + s * 6.3)
